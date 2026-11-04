@@ -131,6 +131,27 @@ their icon. The checked-in multi-resolution icon is generated from Windows'
 Segoe UI Emoji font in blue on a transparent background. To regenerate it on
 Windows, run `powershell -NoProfile -File .\tools\New-AppIcon.ps1` before building.
 
+Pull requests and pushes to `main` run a Windows build, the regression/UI tests,
+and a NuGet audit of direct and transitive dependencies. Restore fails on known
+vulnerabilities at any severity or an unavailable audit feed. The same checks
+run weekly and can be started manually. Dependabot checks for NuGet and GitHub
+Actions updates weekly; workflow actions are pinned to commit SHAs.
+
+For public repositories, the workflow also runs CodeQL's extended C# security
+queries and reviews PR dependency changes for newly introduced vulnerabilities
+at any severity. These two jobs are skipped while the repository is private
+to avoid requiring a paid private-repository security entitlement. A visibility
+change takes effect on the next workflow run; dependency review also requires
+GitHub's dependency graph to be enabled in repository settings.
+
+These are baseline checks, not a guarantee of security. CodeQL findings appear
+in GitHub's code-scanning results; configure code-scanning rules in the
+repository's ruleset if alerts should block merging. After checks have run, make
+**Windows build, tests, and dependency audit** and **Review dependency changes**
+required status checks if merges should be blocked on failures (only require
+dependency review when the repository is public). Dependabot configuration and
+scheduled runs take effect after they are merged to the default branch.
+
 </details>
 
 Windows diagnostics are provided by the built-in
